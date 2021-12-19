@@ -72,12 +72,14 @@ int main(int argc, char *argv[])
                 int     nr, maxfd;
                 ssize_t n;              /* n bytes */
 		struct timeval tv;
+
 		tv.tv_sec = 0;
 		tv.tv_usec = WDELAY;
 
                 FD_ZERO(&rfds);
                 FD_ZERO(&wfds);
                 FD_SET(STDIN_FILENO, &rfds);
+		maxfd = STDIN_FILENO;
 		if (was_full && cbuf.count >= 1) {
                         FD_SET(STDOUT_FILENO, &wfds);
                         maxfd = STDOUT_FILENO;
@@ -108,7 +110,8 @@ int main(int argc, char *argv[])
 #endif
                         cbuf.count++;
                 }
-		if (cbuf.count >= 1 && was_full == 1 && (nr == 0 || FD_ISSET(STDIN_FILENO, &rfds))) {
+		if (cbuf.count >= 1 && was_full == 1 &&
+		    (nr == 0 || FD_ISSET(STDIN_FILENO, &rfds))) {
 			if (full) {
 				fprintf(stderr, "buffer full!\n");
 #ifdef FULL_SIGNAL_FILE
